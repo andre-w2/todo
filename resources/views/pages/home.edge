@@ -1,15 +1,53 @@
 <!DOCTYPE html>
-<html>
+<html class="" lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> AdonisJS - A fully featured web framework for Node.js </title>
+  <title>TODO</title>
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
 
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body>
-  <h1 class="text-3xl font-bold underline text-green-400">
-    Hello world!
-  </h1>
+<body class="dark:bg-neutral-veryDarkBlue bg-[url('/resources/images/bg-desktop-light.jpg')] bg-no-repeat">
+  <section class="container mt-20">
+    <div class="flex justify-between items-center">
+      <h1 class="text-white font-700 text-4xl tracking-widest">TODO</h1>
+      <button>
+        <img src="{{ asset('resources/images/icon-moon.svg') }}" alt="">
+      </button>
+    </div>
+
+    <div class="flex bg-white mt-4 py-2 px-4 items-center rounded-md">
+      <button class="rounded-full border">
+        <img src="{{ asset('resources/images/icon-check.svg') }}" class="w-4 h-4" alt="check">
+      </button>
+      <input class="outline-none p-2 w-full ml-3" placeholder="Create a new todo..." type="text">
+    </div>
+
+    <div class="mt-5 shadow-2xl rounded-md">
+      <div class="overflow-x-auto  max-h-80">
+        @each(item in Array(20))
+          <div class="flex bg-white py-2 px-4 items-center group">
+            <button class="rounded-full border">
+              <img src="{{ asset('resources/images/icon-check.svg') }}" class="w-4 h-4" alt="check">
+            </button>
+            <input class="outline-none p-2 w-full ml-3 cursor-pointer" placeholder="lorem 123" type="text">
+            <button class="hidden group-hover:block cursor-pointer">
+              <img src="{{ asset('resources/images/icon-cross.svg') }}" class="w-4 h-4" alt="check">
+            </button>
+          </div>
+        @end
+      </div>
+      <div class="flex justify-between items-center">
+        <p>5 items left</p>
+        <div>
+          <button>All</button>
+          <button>Active</button>
+          <button>Completed</button>
+        </div>
+        <button>Clear Completed</button>
+      </div>
+    </div>
+  </section>
 </body>
 </html>
