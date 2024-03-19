@@ -18,4 +18,8 @@ export default class TodosServices {
 
       return find
    }
+
+   async destroy(id: string) {
+      return await Todos.query().where('id', id).delete()
+   }
 }

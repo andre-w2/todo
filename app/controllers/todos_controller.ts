@@ -7,9 +7,8 @@ import type { HttpContext } from '@adonisjs/core/http'
 export default class TodosController {
    constructor(protected todosServices: TodosServices) {}
 
-   async index({ view }: HttpContext) {
-      const todos = await this.todosServices.index()
-      return view.render('pages/home', { todos })
+   async index() {
+      return await this.todosServices.index()
    }
 
    async store({ request }: HttpContext) {
@@ -21,5 +20,7 @@ export default class TodosController {
 
    // async update({ params, request }: HttpContext) {}
 
-   // async destroy({ params }: HttpContext) {}
+   async destroy({ params }: HttpContext) {
+      return this.todosServices.destroy(params.id)
+   }
 }
