@@ -61,10 +61,12 @@
     "@adonisjs/static": "^1.1.1",
     "@adonisjs/vite": "^2.0.2",
     "@vinejs/vine": "^1.7.1",
+    "axios": "^1.6.8",
     "edge.js": "^6.0.1",
     "luxon": "^3.4.4",
     "mysql2": "^3.9.2",
-    "reflect-metadata": "^0.2.1"
+    "reflect-metadata": "^0.2.1",
+    "toastify-js": "^1.12.0"
   },
   "eslintConfig": {
     "extends": "@adonisjs/eslint-config/app"

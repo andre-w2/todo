@@ -17,35 +17,42 @@
       </button>
     </div>
 
-    <div class="flex bg-white mt-4 py-2 px-4 items-center rounded-md">
-      <button class="rounded-full border">
-        <img src="{{ asset('resources/images/icon-check.svg') }}" class="w-4 h-4" alt="check">
-      </button>
-      <input class="outline-none p-2 w-full ml-3" placeholder="Create a new todo..." type="text">
-    </div>
+    <form class="flex bg-white mt-4 py-2 px-4 items-center rounded-md">
+      {{ csrfField() }}
+
+      <label class="rounded-full border relative cursor-pointer">
+        <input type="checkbox" name="checkbox" class="hidden peer">
+        <img src="{{ asset('resources/images/icon-check.svg') }}" class="w-4 h-4 rounded-full peer-checked:bg-primary-brightBlue" />
+      </label>
+      <input autocomplete="off" class="outline-none p-2 w-full ml-3" name="todo" placeholder="Create a new todo..." type="text">
+    </form>
 
     <div class="mt-5 shadow-2xl rounded-md">
-      <div class="overflow-x-auto  max-h-80">
-        @each(item in Array(20))
-          <div class="flex bg-white py-2 px-4 items-center group">
+      <div class="overflow-x-auto min-h-80 bg-white max-h-80">
+        @each(todo in todos)
+          <div class="flex bg-white py-2 px-4 items-center group border boder-b-2">
             <button class="rounded-full border">
-              <img src="{{ asset('resources/images/icon-check.svg') }}" class="w-4 h-4" alt="check">
+              @if(todo.isCompleted)
+                <img src="{{ asset('resources/images/icon-check.svg') }}" class="w-4 h-4 bg-neutral-veryDarkGrayishBlue" alt="check">
+              @else
+                <img src="{{ asset('resources/images/icon-check.svg') }}" class="w-4 h-4" alt="check">
+              @end
             </button>
-            <input class="outline-none p-2 w-full ml-3 cursor-pointer" placeholder="lorem 123" type="text">
+            <input class="outline-none p-2 w-full ml-3 cursor-pointer" type="text" value="{{ todo.todo }}">
             <button class="hidden group-hover:block cursor-pointer">
               <img src="{{ asset('resources/images/icon-cross.svg') }}" class="w-4 h-4" alt="check">
             </button>
           </div>
         @end
       </div>
-      <div class="flex justify-between items-center">
-        <p>5 items left</p>
-        <div>
-          <button>All</button>
-          <button>Active</button>
-          <button>Completed</button>
+      <div class="flex justify-between items-center py-2 px-4 border border-t-2">
+        <p class="text-xs text-neutral-darkGrayishBlue">{{ todos.length }} items left</p>
+        <div class="text-xs space-x-2">
+          <button class="text-primary-brightBlue duration-300 transition hover:text-lightGrayishBlue">All</button>
+          <button class="hover:text-lightGrayishBlue transition-all">Active</button>
+          <button class="text-neutral-darkGrayishBlue">Completed</button>
         </div>
-        <button>Clear Completed</button>
+        <button class="text-xs hover:text-primary-brightBlue">Clear Completed</button>
       </div>
     </div>
   </section>
