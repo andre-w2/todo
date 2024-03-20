@@ -1,3 +1,5 @@
+import.meta.glob(['../images/**'])
+
 import { axios } from './axios.js'
 import { success, error } from './toats.js'
 
@@ -7,6 +9,7 @@ const urlParams = new URLSearchParams(window.location.search)
 const body = document.querySelector('body')
 
 let todosLength = 0
+let draggedItem = null
 
 const element =
    document.querySelector(`nav > [href="?status=${urlParams.get('status')}"]`) ||
@@ -102,6 +105,9 @@ const createCard = (data, isEnd = true) => {
       )
       div.id = `todo_${id}`
 
+      div.draggable = true
+      div.addEventListener('dragstart', handleDragStart)
+
       const label = document.createElement('label')
       label.className = 'rounded-full border relative cursor-pointer'
       label.for = `checkbox_${id}`
@@ -195,3 +201,27 @@ bntClearCompleted.addEventListener('click', () => {
       checkedTodos.forEach((item) => item.closest('div').remove())
    })
 })
+
+const handleDragStart = (e) => {
+   draggedItem = e.target
+   e.dataTransfer.effectAllowed = 'move'
+   e.dataTransfer.setData('text/html', draggedItem)
+}
+
+const handleDragOver = (e) => {
+   if (e.preventDefault) {
+      e.preventDefault()
+   }
+   e.dataTransfer.dropEffect = 'move'
+   return false
+}
+
+const handleDrop = (e) => {
+   if (draggedItem !== e.target) {
+      todosContainer.append(draggedItem.closest('div'), e.target.closest('div'))
+   }
+   draggedItem = null
+}
+
+todosContainer.addEventListener('dragover', handleDragOver)
+todosContainer.addEventListener('drop', handleDrop)
