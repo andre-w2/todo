@@ -3,7 +3,46 @@ import { success, error } from './toats.js'
 
 const forms = document.forms
 const todosContainer = document.querySelector('#render')
+const urlParams = new URLSearchParams(window.location.search)
+const body = document.querySelector('body')
+
 let todosLength = 0
+
+const element =
+   document.querySelector(`nav > [href="?status=${urlParams.get('status')}"]`) ||
+   document.querySelector('nav [href]')
+
+if (element) {
+   element.classList.add('text-primary-brightBlue', 'dark:text-primary-brightBlue')
+}
+
+if (
+   localStorage.theme === 'dark' ||
+   (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+) {
+   body.classList.remove("bg-[url('/public/assets/images/bg-desktop-light.jpg')]")
+   body.classList.add("bg-[url('/public/assets/images/bg-desktop-dark.jpg')]")
+   document.documentElement.classList.add('dark')
+} else {
+   document.documentElement.classList.remove('dark')
+}
+
+const switchTheme = (evt) => {
+   if (localStorage.theme === 'dark') {
+      evt.target.src = '/assets/images/icon-moon.svg'
+      body.classList.remove("bg-[url('/public/assets/images/bg-desktop-dark.jpg')]")
+      body.classList.add("bg-[url('/public/assets/images/bg-desktop-light.jpg')]")
+      localStorage.removeItem('theme')
+      document.documentElement.classList.remove('dark')
+   } else {
+      body.classList.remove("bg-[url('/public/assets/images/bg-desktop-light.jpg')]")
+      body.classList.add("bg-[url('/public/assets/images/bg-desktop-dark.jpg')]")
+      evt.target.src = '/assets/images/icon-sun.svg'
+      document.documentElement.classList.add('dark')
+      localStorage.setItem('theme', 'dark')
+   }
+}
+document.querySelector('#switchTheme').addEventListener('click', switchTheme)
 
 forms.item(0).addEventListener('submit', (evt) => {
    evt.preventDefault()
@@ -57,8 +96,9 @@ const createCard = (data, isEnd = true) => {
          'px-4',
          'items-center',
          'group',
-         'border',
-         'border-b-2'
+         'border-b-2',
+         'dark:border-neutral-darkGrayishBlue',
+         'dark:bg-neutral-veryDarkDesaturatedBlue'
       )
       div.id = `todo_${id}`
 
@@ -79,7 +119,13 @@ const createCard = (data, isEnd = true) => {
       img.className = 'w-4 h-4 peer-checked:bg-primary-brightBlue'
 
       const span = document.createElement('span')
-      span.classList.add('p-2', 'w-full', 'ml-3', 'cursor-pointer')
+      span.classList.add(
+         'p-2',
+         'w-full',
+         'ml-3',
+         'cursor-pointer',
+         'dark:text-neutral-darkGrayishBlue'
+      )
       span.className += isChecked ? ' line-through' : ''
       span.textContent = todoText
 
@@ -123,7 +169,7 @@ const lengthTodos = () => {
 
 const getTodos = () => {
    axios
-      .get('/todos')
+      .get(`/todos?status=${urlParams.get('status')}`)
       .then(({ data }) => {
          todosLength = data.length
          lengthTodos()

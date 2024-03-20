@@ -10,7 +10,7 @@ export default class extends BaseSchema {
          table.string('todo').notNullable()
          table.boolean('is_checked').defaultTo(false)
 
-         table.integer('user_id').unsigned().references('id').inTable('users')
+         table.string('user_id').notNullable()
          table.timestamps(true, true)
       })
    }

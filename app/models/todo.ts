@@ -1,7 +1,5 @@
 import { DateTime } from 'luxon'
-import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
-import type { BelongsTo } from '@adonisjs/lucid/types/relations'
-import User from './user.js'
+import { BaseModel, column } from '@adonisjs/lucid/orm'
 
 export default class Todos extends BaseModel {
    @column({ isPrimary: true })
@@ -13,7 +11,7 @@ export default class Todos extends BaseModel {
    @column()
    declare is_checked: boolean
 
-   @column({})
+   @column()
    declare userId: string
 
    @column.dateTime({ autoCreate: true })
@@ -21,10 +19,4 @@ export default class Todos extends BaseModel {
 
    @column.dateTime({ autoCreate: true, autoUpdate: true })
    declare updatedAt: DateTime
-
-   @belongsTo(() => User, {
-      localKey: 'user_id',
-      foreignKey: 'userId',
-   })
-   declare user: BelongsTo<typeof User>
 }

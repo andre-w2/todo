@@ -12,31 +12,31 @@
   <section class="container mt-20">
     <div class="flex justify-between items-center">
       <h1 class="text-white font-700 text-4xl tracking-widest">TODO</h1>
-      <button>
+      <button id="switchTheme">
         <img src="/assets/images/icon-moon.svg" alt="">
       </button>
     </div>
 
-    <form class="flex bg-white mt-4 py-2 px-4 items-center rounded-md">
+    <form class="flex bg-white dark:bg-neutral-veryDarkDesaturatedBlue mt-4 py-2 px-4 items-center rounded-md">
       {{ csrfField() }}
 
       <label class="rounded-full border relative cursor-pointer">
         <input type="checkbox" name="checkbox" class="hidden peer">
         <img src="/assets/images/icon-check.svg" class="w-4 h-4 rounded-full peer-checked:bg-primary-brightBlue" />
       </label>
-      <input autocomplete="off" class="outline-none p-2 w-full ml-3" name="todo" placeholder="Create a new todo..." type="text">
+      <input autocomplete="off" class="outline-none p-2 w-full ml-3 dark:bg-neutral-veryDarkDesaturatedBlue dark:text-neutral-darkGrayishBlue" name="todo" placeholder="Create a new todo..." type="text">
     </form>
 
     <div class="mt-5 shadow-2xl rounded-md">
-      <div id="render" class="overflow-x-auto min-h-80 bg-white max-h-80"></div>
-      <div class="flex justify-between items-center py-2 px-4 border border-t-2">
+      <div id="render" class="overflow-x-auto min-h-80 bg-white dark:bg-neutral-veryDarkDesaturatedBlue max-h-80"></div>
+      <div class="flex justify-between items-center py-2 px-4 border-t-2 dark:bg-neutral-veryDarkDesaturatedBlue dark:border-neutral-darkGrayishBlue">
         <p class="text-xs text-neutral-darkGrayishBlue" id="countTodos"></p>
-        <div class="text-xs space-x-2">
-          <button class="text-primary-brightBlue duration-300 transition hover:text-lightGrayishBlue">All</button>
-          <button class="hover:text-lightGrayishBlue transition-all">Active</button>
-          <button class="text-neutral-darkGrayishBlue">Completed</button>
-        </div>
-        <button id="clear-completed" class="text-xs hover:text-primary-brightBlue">Clear Completed</button>
+        <nav class="text-xs space-x-2">
+          <a href="/" class="duration-300 transition hover:text-primary-brightBlue dark:text-neutral-darkGrayishBlue">All</a>
+          <a href="?status=active" class="duration-300 transition hover:text-primary-brightBlue dark:text-neutral-darkGrayishBlue">Active</a>
+          <a href="?status=completed" class="duration-300 transition hover:text-primary-brightBlue dark:text-neutral-darkGrayishBlue">Completed</a>
+        </nav>
+        <button id="clear-completed" class="text-xs hover:text-primary-brightBlue hover:dark:text-primary-brightBlue dark:text-neutral-darkGrayishBlue ">Clear Completed</button>
       </div>
     </div>
   </section>
