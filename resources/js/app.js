@@ -1,23 +1,23 @@
-import.meta.glob(['../images/**'])
 import { axios } from './axios.js'
 import { success, error } from './toats.js'
 
 const forms = document.forms
-let tododLength = 0
+const todosContainer = document.querySelector('#render')
+let todosLength = 0
 
 forms.item(0).addEventListener('submit', (evt) => {
    evt.preventDefault()
    const form = forms.item(0)
    const isChecked = form.checkbox.checked
-   const todo = form.todo.value
+   const todo = form.todo.value.trim()
 
-   if (todo.trim().length >= 2) {
+   if (todo.length >= 2) {
       axios
          .post('/todos', { isChecked, todo })
-         .then((res) => {
-            tododLength += 1
+         .then(({ data }) => {
+            todosLength += 1
             lengthTodos()
-            createCard([res.data], false)
+            createCard([data], false)
 
             form.reset()
             success('Success').showToast()
@@ -36,7 +36,7 @@ const removeCard = (id) => {
    axios
       .delete(`/todos/${id}`)
       .then((res) => {
-         tododLength -= 1
+         todosLength -= 1
          lengthTodos()
          success('Delete').showToast()
       })
@@ -47,9 +47,8 @@ const removeCard = (id) => {
 }
 
 const createCard = (data, isEnd = true) => {
-   const container = document.querySelector('#render')
-
    data.forEach((todo) => {
+      const { id, isChecked, todo: todoText } = todo
       const div = document.createElement('div')
       div.classList.add(
          'flex',
@@ -61,32 +60,19 @@ const createCard = (data, isEnd = true) => {
          'border',
          'border-b-2'
       )
-      div.id = `todo_${todo.id}`
+      div.id = `todo_${id}`
+
       const label = document.createElement('label')
       label.className = 'rounded-full border relative cursor-pointer'
-      label.for = `checkbox_${todo.id}`
+      label.for = `checkbox_${id}`
 
       const inputCheckbox = document.createElement('input')
       inputCheckbox.type = 'checkbox'
       inputCheckbox.classList.add('hidden', 'peer')
-      inputCheckbox.id = `checkbox_${todo.id}`
-      inputCheckbox.checked = todo.isChecked
+      inputCheckbox.id = `checkbox_${id}`
+      inputCheckbox.checked = isChecked
 
-      inputCheckbox.addEventListener('change', (evt) => {
-         const span = document
-            .querySelector(`#checkbox_${todo.id}`)
-            .closest('div')
-            .querySelector('span')
-         if (evt.target.checked) {
-            span.classList.add('line-through')
-         } else {
-            span.classList.remove('line-through')
-         }
-
-         axios.put(`/todos/${todo.id}`, { isChecked: evt.target.checked }).catch(() => {
-            error('Ups... Error').showToast()
-         })
-      })
+      inputCheckbox.addEventListener('change', handleCheckboxChange)
 
       const img = document.createElement('img')
       img.src = '/assets/images/icon-check.svg'
@@ -94,17 +80,14 @@ const createCard = (data, isEnd = true) => {
 
       const span = document.createElement('span')
       span.classList.add('p-2', 'w-full', 'ml-3', 'cursor-pointer')
-      span.className += todo.isChecked ? ' line-through' : ''
-      span.textContent = todo.todo
+      span.className += isChecked ? ' line-through' : ''
+      span.textContent = todoText
 
       const deleteButton = document.createElement('button')
       deleteButton.classList.add('hidden', 'group-hover:block', 'cursor-pointer')
       deleteButton.innerHTML =
          '<img src="/assets/images/icon-cross.svg" class="w-4 h-4" alt="check">'
-
-      deleteButton.addEventListener('click', () => {
-         removeCard(todo.id)
-      })
+      deleteButton.addEventListener('click', () => removeCard(id))
 
       label.appendChild(inputCheckbox)
       label.appendChild(img)
@@ -113,24 +96,38 @@ const createCard = (data, isEnd = true) => {
       div.appendChild(deleteButton)
 
       if (isEnd) {
-         container.appendChild(div)
+         todosContainer.appendChild(div)
       } else {
-         container.insertBefore(div, container.firstChild)
+         todosContainer.insertBefore(div, todosContainer.firstChild)
       }
    })
 }
 
+const handleCheckboxChange = (evt) => {
+   const span = evt.target.closest('div').querySelector('span')
+
+   if (evt.target.checked) {
+      span.classList.add('line-through')
+   } else {
+      span.classList.remove('line-through')
+   }
+
+   axios
+      .put(`/todos/${evt.target.id.split('_')[1]}`, { isChecked: evt.target.checked })
+      .catch(() => error('Ups... Error').showToast())
+}
+
 const lengthTodos = () => {
-   document.querySelector('#countTodos').innerHTML = `${tododLength} items left`
+   document.querySelector('#countTodos').innerHTML = `${todosLength} items left`
 }
 
 const getTodos = () => {
    axios
       .get('/todos')
-      .then((res) => {
-         tododLength = res.data.length
+      .then(({ data }) => {
+         todosLength = data.length
          lengthTodos()
-         createCard(res.data)
+         createCard(data)
       })
       .catch((err) => {
          console.log(err)
@@ -141,12 +138,14 @@ getTodos()
 
 const bntClearCompleted = document.querySelector('#clear-completed')
 bntClearCompleted.addEventListener('click', () => {
-   axios.post('/todos/clear-complete').then((_) => {
-      const findAll = [...document.querySelectorAll('#render input[type=checkbox]')].filter(
+   axios.post('/todos/clear-complete').then(() => {
+      const checkedTodos = [...document.querySelectorAll('#render input[type=checkbox]')].filter(
          (item) => item.checked
       )
-      tododLength -= findAll.length
+
+      todosLength -= checkedTodos.length
       lengthTodos()
-      findAll.map((i) => i.closest('div').remove())
+
+      checkedTodos.forEach((item) => item.closest('div').remove())
    })
 })
