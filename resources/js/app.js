@@ -62,16 +62,40 @@ const createCard = (data, isEnd = true) => {
          'border-b-2'
       )
       div.id = `todo_${todo.id}`
-      const button = document.createElement('button')
-      button.classList.add('rounded-full', 'border')
-      button.innerHTML = todo.isChecked
-         ? '<img src="/assets/images/icon-check.svg" class="w-4 h-4 bg-neutral-veryDarkGrayishBlue" alt="check">'
-         : '<img src="/assets/images/icon-check.svg" class="w-4 h-4" alt="check">'
+      const label = document.createElement('label')
+      label.className = 'rounded-full border relative cursor-pointer'
+      label.for = `checkbox_${todo.id}`
 
-      const input = document.createElement('input')
-      input.classList.add('outline-none', 'p-2', 'w-full', 'ml-3', 'cursor-pointer')
-      input.type = 'text'
-      input.value = todo.todo
+      const inputCheckbox = document.createElement('input')
+      inputCheckbox.type = 'checkbox'
+      inputCheckbox.classList.add('hidden', 'peer')
+      inputCheckbox.id = `checkbox_${todo.id}`
+      inputCheckbox.checked = todo.isChecked
+
+      inputCheckbox.addEventListener('change', (evt) => {
+         const span = document
+            .querySelector(`#checkbox_${todo.id}`)
+            .closest('div')
+            .querySelector('span')
+         if (evt.target.checked) {
+            span.classList.add('line-through')
+         } else {
+            span.classList.remove('line-through')
+         }
+
+         axios.put(`/todos/${todo.id}`, { isChecked: evt.target.checked }).catch(() => {
+            error('Ups... Error').showToast()
+         })
+      })
+
+      const img = document.createElement('img')
+      img.src = '/assets/images/icon-check.svg'
+      img.className = 'w-4 h-4 peer-checked:bg-primary-brightBlue'
+
+      const span = document.createElement('span')
+      span.classList.add('p-2', 'w-full', 'ml-3', 'cursor-pointer')
+      span.className += todo.isChecked ? ' line-through' : ''
+      span.textContent = todo.todo
 
       const deleteButton = document.createElement('button')
       deleteButton.classList.add('hidden', 'group-hover:block', 'cursor-pointer')
@@ -82,8 +106,10 @@ const createCard = (data, isEnd = true) => {
          removeCard(todo.id)
       })
 
-      div.appendChild(button)
-      div.appendChild(input)
+      label.appendChild(inputCheckbox)
+      label.appendChild(img)
+      div.appendChild(label)
+      div.appendChild(span)
       div.appendChild(deleteButton)
 
       if (isEnd) {
@@ -103,6 +129,7 @@ const getTodos = () => {
       .get('/todos')
       .then((res) => {
          tododLength = res.data.length
+         lengthTodos()
          createCard(res.data)
       })
       .catch((err) => {
@@ -111,3 +138,15 @@ const getTodos = () => {
       })
 }
 getTodos()
+
+const bntClearCompleted = document.querySelector('#clear-completed')
+bntClearCompleted.addEventListener('click', () => {
+   axios.post('/todos/clear-complete').then((_) => {
+      const findAll = [...document.querySelectorAll('#render input[type=checkbox]')].filter(
+         (item) => item.checked
+      )
+      tododLength -= findAll.length
+      lengthTodos()
+      findAll.map((i) => i.closest('div').remove())
+   })
+})
